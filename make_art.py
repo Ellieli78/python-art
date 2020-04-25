@@ -80,6 +80,26 @@ def get_flip_options():
 
     return choice.upper()
 
+def get_rotate_options(): 
+    userChoices = Bullet(
+        # Prompt for the user to see
+        prompt="\n\tHow would you like the picture rotated in counter clockwise direction?",
+        # List of options to choose from
+        choices=["45 degrees", "90 degrees", "180 degrees", "270 degrees"],
+        # How much space to pad in from the start of the prompt
+        align=5,
+        # Spacing between the bullet and the choice
+        margin=2,
+        # Space between the prompt and the list of choices
+        shift=1,
+        # The foreground colour of the bullet
+        bullet_color=colors.foreground["blue"]
+    )
+    menu = userChoices.launch()
+    choice = menu[0]
+
+    return choice.upper()
+
 def get_image_conversion(image_filepath, clarity, flipped, flip_opts):
     image = None
 
@@ -89,6 +109,15 @@ def get_image_conversion(image_filepath, clarity, flipped, flip_opts):
             image = image.transpose(method=Image.FLIP_LEFT_RIGHT)
         elif flipped and flip_opts == "T":
             image = image.transpose(method=Image.FLIP_TOP_BOTTOM)
+        elif flipped and flip_opts == "4": 
+            image = image.rotate(45)
+        elif flipped and flip_opts == "9":
+            image = image.rotate(90)
+        elif flipped and flip_opts == "1":
+            image = image.rotate(180)
+        elif flipped and flip_opts == "2":
+            image = image.rotate(270)
+
     except:
         """
         If path entered is invalid or image not found,
@@ -231,7 +260,8 @@ def menu(image_file_path, clarity):
         "B: Create a colored ASCII representation",
         "C: Create a thumbnail",
         "D: Create a flipped ASCII representation",
-        "E: Create an ASCII representation of a gif",
+        "E: Create a rotated ASCII representation", 
+        "F: Create an ASCII representation of a gif",
         "Q: Quit/Log Out",
     ]
 
@@ -256,7 +286,7 @@ def menu(image_file_path, clarity):
         flipped = False
         flip_opts = ""
 
-        if choice.upper() == 'A' or choice.upper() == 'B' or choice.upper() == 'D':
+        if choice.upper() == 'A' or choice.upper() == 'B' or choice.upper() == 'D' or choice.upper() == 'E':
             if choice.upper() == 'A':
                 msg = f"\n Creating an ASCII representation of {image_file_path}: \n"
                 color.disable()
@@ -266,6 +296,10 @@ def menu(image_file_path, clarity):
             elif choice.upper() == 'D':
                 flip_opts = get_flip_options()
                 msg = f"\n Creating a flipped ASCII representation of {image_file_path}: \n"
+                flipped = True
+            elif choice.upper() == 'E':  
+                flip_opts = get_rotate_options()
+                msg = f"\n Creating a rotated ASCII representation of {image_file_path}: \n"
                 flipped = True
 
             print(color.info(msg))
@@ -288,7 +322,7 @@ def menu(image_file_path, clarity):
 
         elif choice.upper() == 'C':
             create_thumbnail(image_file_path)
-        elif choice.upper() == 'E':
+        elif choice.upper() == 'F':
             if validate_gif(image_file_path):
                 build_ascii_gif(image_file_path, clarity)
             else:
